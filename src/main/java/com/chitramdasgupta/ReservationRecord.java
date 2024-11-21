@@ -1,6 +1,8 @@
 package com.chitramdasgupta;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReservationRecord {
     private final LocalDate issueDate;
@@ -9,6 +11,7 @@ public class ReservationRecord {
     private final Customer customer;
     private final Vehicle vehicle;
     private ReservationStatus reservationStatus;
+    private final List<AddOn> addOns;
 
     public ReservationRecord(LocalDate issueDate, LocalDate dueDate, Customer customer, Vehicle vehicle) {
         this.issueDate = issueDate;
@@ -16,6 +19,7 @@ public class ReservationRecord {
         this.customer = customer;
         this.vehicle = vehicle;
         this.reservationStatus = ReservationStatus.ISSUED;
+        addOns = new ArrayList<>();
     }
 
     public Customer getCustomer() {
@@ -40,5 +44,13 @@ public class ReservationRecord {
 
     public LocalDate getDueDate() {
         return dueDate;
+    }
+
+    public void addAddOn(AddOn addOn) {
+        addOns.add(addOn);
+    }
+
+    public List<AddOn> getAddOns() {
+        return addOns;
     }
 }

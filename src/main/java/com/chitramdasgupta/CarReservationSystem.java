@@ -1,5 +1,7 @@
 package com.chitramdasgupta;
 
+import java.util.ArrayList;
+
 public class CarReservationSystem {
     private final InventoryManager inventoryManager;
     private final ReservationManager reservationManager;
@@ -7,8 +9,8 @@ public class CarReservationSystem {
 
     public CarReservationSystem(NotificationManager notificationManager) {
         this.inventoryManager = new InventoryManager();
-        this.reservationManager = new ReservationManager(inventoryManager);
         this.notificationManager = notificationManager;
+        this.reservationManager = new ReservationManager(inventoryManager, notificationManager);
     }
 
     public void addCar(VehicleType vehicleType) {
@@ -20,7 +22,7 @@ public class CarReservationSystem {
     }
 
     public void makeReservation(VehicleType vehicleType, Customer customer) {
-        reservationManager.makeReservation(vehicleType, customer);
+        reservationManager.makeReservation(vehicleType, customer, new ArrayList<>());
     }
 
     public void cancelReservation(VehicleType vehicleType, Customer customer) {

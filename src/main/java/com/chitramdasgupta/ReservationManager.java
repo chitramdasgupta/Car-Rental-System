@@ -21,9 +21,13 @@ public class ReservationManager implements Reservation {
     }
 
     @Override
-    public void makeReservation(VehicleType vehicleType, Customer customer) {
+    public void makeReservation(VehicleType vehicleType, Customer customer, List<AddOn> addOns) {
         Vehicle vehicle = inventoryManager.getVehicle(vehicleType);
-        ReservationRecord reservationRecord = new ReservationRecord(LocalDate.now(), LocalDate.now(), customer, vehicle);
+        ReservationRecord reservationRecord = new ReservationRecord(LocalDate.now(), LocalDate.now().plusDays(7), customer, vehicle);
+
+        for (AddOn addOn : addOns) {
+            reservationRecord.addAddOn(addOn);
+        }
 
         vehicle.setAvailable(false);
         reservations.add(reservationRecord);
@@ -49,13 +53,14 @@ public class ReservationManager implements Reservation {
 
     @Override
     public void returnVehicle(ReservationRecord reservationRecord) {
-        reservationRecord.getVehicle().setAvailable(false);
+        reservationRecord.getVehicle().setAvailable(true);
         reservations.remove(reservationRecord);
         reservationHistoryManager.completeReservationRecord(reservationRecord);
 
-        int fees = feeManager.getTotalCost(reservationRecord);
+        double totalFees = feeManager.getTotalCost(reservationRecord) +
+                reservationRecord.getAddOns().stream().mapToDouble(AddOn::getCost).sum();
 
-        System.out.println("The total fees is " + fees);
+        System.out.println("The total fees including add-ons is " + totalFees);
     }
 
     public void checkForUpcomingEvents() {
