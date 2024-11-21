@@ -3,10 +3,12 @@ package com.chitramdasgupta;
 public class CarReservationSystem {
     private final InventoryManager inventoryManager;
     private final ReservationManager reservationManager;
+    private final NotificationManager notificationManager;
 
-    public CarReservationSystem() {
+    public CarReservationSystem(NotificationManager notificationManager) {
         this.inventoryManager = new InventoryManager();
         this.reservationManager = new ReservationManager(inventoryManager);
+        this.notificationManager = notificationManager;
     }
 
     public void addCar(VehicleType vehicleType) {
@@ -28,5 +30,13 @@ public class CarReservationSystem {
 
     public void returnVehicle(ReservationRecord reservationRecord) {
         reservationManager.returnVehicle(reservationRecord);
+    }
+
+    public void registerNotifier(Notifier notifier) {
+        notificationManager.registerNotifier(notifier);
+    }
+
+    public void checkReservations() {
+        reservationManager.checkForUpcomingEvents();
     }
 }

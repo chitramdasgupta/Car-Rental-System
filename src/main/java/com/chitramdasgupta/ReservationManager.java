@@ -1,6 +1,7 @@
 package com.chitramdasgupta;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,12 +10,14 @@ public class ReservationManager implements Reservation {
     private final InventoryManager inventoryManager;
     private final ReservationHistoryManager reservationHistoryManager;
     private final FeeManager feeManager;
+    private final NotificationManager notificationManager;
 
-    public ReservationManager(InventoryManager inventoryManager) {
+    public ReservationManager(InventoryManager inventoryManager, NotificationManager notificationManager) {
         this.reservations = new ArrayList<>();
         this.inventoryManager = inventoryManager;
         this.reservationHistoryManager = ReservationHistoryManager.getInstance();
         this.feeManager = new FeeManager();
+        this.notificationManager = notificationManager;
     }
 
     @Override
@@ -53,5 +56,24 @@ public class ReservationManager implements Reservation {
         int fees = feeManager.getTotalCost(reservationRecord);
 
         System.out.println("The total fees is " + fees);
+    }
+
+    public void checkForUpcomingEvents() {
+        for (ReservationRecord record : reservations) {
+            long daysUntilPickUp = ChronoUnit.DAYS.between(LocalDate.now(), record.getDueDate());
+            if (daysUntilPickUp == 1) {
+                notificationManager.notifyObservers("Reminder: Your reservation for " +
+                        record.getVehicle().getVehicleType() + " is tomorrow!");
+            }
+
+            long daysUntilDue = ChronoUnit.DAYS.between(LocalDate.now(), record.getDueDate());
+            if (daysUntilDue == 1) {
+                notificationManager.notifyObservers("Reminder: Your reservation for " +
+                        record.getVehicle().getVehicleType() + " is due tomorrow!");
+            } else if (daysUntilDue < 0) {
+                notificationManager.notifyObservers("Alert: Your reservation for " +
+                        record.getVehicle().getVehicleType() + " is overdue!");
+            }
+        }
     }
 }
